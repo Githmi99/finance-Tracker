@@ -8,6 +8,8 @@ import Income from '../Components/Income/Income';
 import Expenses from '../Components/Expenses/Expenses';
 import bg from '../img/bg.png';
 import styled from 'styled-components';
+import ViewTransactions from '../Components/ViewTransactions';
+
 
 const DashboardPage = () => {
   const [active, setActive] = useState(1);
@@ -19,11 +21,12 @@ const DashboardPage = () => {
       case 1:
         return <Dashboard />;
       case 2:
-        return <Dashboard />;
+        return <ViewTransactions/>;
       case 3:
         return <Income />;
       case 4:
         return <Expenses />;
+    
       default:
         return <Dashboard />;
     }

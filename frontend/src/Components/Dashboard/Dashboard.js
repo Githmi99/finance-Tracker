@@ -1,23 +1,51 @@
-import React, { useEffect } from 'react'
-import styled from 'styled-components'
+import React, { useEffect, useState } from 'react';
+import styled from 'styled-components';
 import { useGlobalContext } from '../../context/globalContext';
 import History from '../../History/History';
 import { InnerLayout } from '../../styles/Layouts';
 import { dollar } from '../../utils/Icons';
 import Chart from '../Chart/Chart';
 
+const validCategories = ['Salary', 'Groceries', 'Utilities', 'Entertainment', 'Transport', 'Health', 'Others']; // Same categories as backend
+
 function Dashboard() {
-    const {totalExpenses,incomes, expenses, totalIncome, totalBalance, getIncomes, getExpenses } = useGlobalContext()
+    const { totalExpenses, incomes, expenses, totalIncome, totalBalance, getIncomes, getExpenses } = useGlobalContext();
+    const [category, setCategory] = useState('');
 
     useEffect(() => {
-        getIncomes()
-        getExpenses()
-    }, [])
+        getIncomes();
+        getExpenses();
+    }, []);
+
+    const handleCategoryChange = (e) => {
+        setCategory(e.target.value);
+        fetchTransactions(e.target.value);
+    };
+
+    const fetchTransactions = (category) => {
+        const query = category ? `?category=${category}` : '';
+        // Assuming you have a fetchTransactions function to get transactions
+        fetch(`/api/transactions${query}`)
+            .then(response => response.json())
+            .then(data => {
+                // Process your data here
+            })
+            .catch(error => console.error('Error fetching transactions:', error));
+    };
 
     return (
         <DashboardStyled>
             <InnerLayout>
                 <h1>All Transactions</h1>
+                <div className="filter-container">
+                    <label htmlFor="category">Filter by Category: </label>
+                    <select id="category" value={category} onChange={handleCategoryChange}>
+                        <option value="">All</option>
+                        {validCategories.map(cat => (
+                            <option key={cat} value={cat}>{cat}</option>
+                        ))}
+                    </select>
+                </div>
                 <div className="stats-con">
                     <div className="chart-con">
                         <Chart />
@@ -63,6 +91,7 @@ function Dashboard() {
                             </p>
                         </div>
                     </div>
+                    
                 </div>
             </InnerLayout>
         </DashboardStyled>
@@ -70,10 +99,22 @@ function Dashboard() {
 }
 
 const DashboardStyled = styled.div`
+    .filter-container {
+        margin-bottom: 1rem;
+        label {
+            margin-right: 0.5rem;
+        }
+        select {
+            padding: 0.5rem;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+    }
     .stats-con{
         display: grid;
         grid-template-columns: repeat(5, 1fr);
         gap: 2rem;
+
         .chart-con{
             grid-column: 1 / 4;
             height: 400px;
@@ -141,7 +182,17 @@ const DashboardStyled = styled.div`
                 }
             }
         }
+
+        .budget-overview-con {
+            grid-column: 1 / -1;
+            margin-top: 2rem;
+            background: #FCF6F9;
+            border: 2px solid #FFFFFF;
+            box-shadow: 0px 1px 15px rgba(0, 0, 0, 0.06);
+            border-radius: 20px;
+            padding: 1rem;
+        }
     }
 `;
 
-export default Dashboard
+export default Dashboard;
