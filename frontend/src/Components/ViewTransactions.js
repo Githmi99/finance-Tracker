@@ -3,6 +3,9 @@ import styled from 'styled-components';
 import { useGlobalContext } from '../context/globalContext'; // Corrected path
 import { dollar } from '../utils/Icons'; // Corrected path
 import { Pie } from 'react-chartjs-2';
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+
+ChartJS.register(ArcElement, Tooltip, Legend);
 
 const validCategories = ['Salary', 'Groceries', 'Utilities', 'Entertainment', 'Transport', 'Health', 'Others'];
 
@@ -19,10 +22,7 @@ function ViewTransactions() {
         const query = category ? `?category=${category}` : '';
         fetch(`/api/transactions${query}`)
             .then(response => response.json())
-            .then(data => {
-                console.log('Fetched transactions:', data);
-                setTransactions(data);
-            })
+            .then(data => setTransactions(data))
             .catch(error => console.error('Error fetching transactions:', error));
     };
 
@@ -38,7 +38,7 @@ function ViewTransactions() {
                 .reduce((total, trans) => total + trans.amount, 0);
         });
 
-        const chartData = {
+        return {
             labels: validCategories,
             datasets: [
                 {
@@ -53,12 +53,10 @@ function ViewTransactions() {
                         '#FFCE56',
                         '#FF6384',
                     ],
+                    hoverOffset: 4,
                 },
             ],
         };
-
-        console.log('Chart data:', chartData);
-        return chartData;
     };
 
     return (
